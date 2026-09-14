@@ -17,7 +17,7 @@ g++ -std=c++17 bms-state-machine.cpp -o main && ./main
 `randomInRange()` plus the batching in `runVoltageTest()`/`runTempTest()` simulate a noisy stream of readings, aggregating min/max over windows of 10 before evaluating a fault. This is meant to simulate how a real BMS polls and aggregates over a scan window instead of reacting to every single sample and test how the state machine responds to delayed inputs of events.
 
 ## Testing Approach
-I implemented a REPL loop in `main()` to use plain-English strings (`"charger connected"`, `"brake pressed and button pressed"`) in the terminal to simulate sensor readings and map them to Events with the `checkEvent()` function. This simulates both driver actions and fault conditions that can be triggered manually, alongside the inputs `test can voltages`/`test can temps` commands that drive the randomized sensor simulation noted above.
+I implemented a REPL loop in `main()` to use user-typed strings (`"charger connected"`, `"brake pressed and button pressed"`) in the terminal to simulate sensor readings and map them to Events with the `checkEvent()` function. This simulates both driver actions and fault conditions that can be triggered manually, alongside the inputs `test can voltages`/`test can temps` commands that drive the randomized sensor simulation noted above. In the most recent update I added assertions tests that run at the startup of the BMS that displays weather all the unit tests passed or not.
 
 ## State Diagram
 ![State Diagram](state-machine-diagram.png)
