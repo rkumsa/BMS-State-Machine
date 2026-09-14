@@ -20,4 +20,4 @@ g++ -std=c++17 bms-state-machine.cpp -o main && ./main
 I implemented a REPL loop in `main()` to use plain-English strings (`"charger connected"`, `"brake pressed and button pressed"`) in the terminal to simulate sensor readings and map them to Events with the `checkEvent()` function. This simulates both driver actions and fault conditions that can be triggered manually, alongside the inputs `test can voltages`/`test can temps` commands that drive the randomized sensor simulation noted above.
 
 ## State Diagram
-![State Diagram](state-diagram.png)
+![State Diagram](state-machine-diagram.png)
