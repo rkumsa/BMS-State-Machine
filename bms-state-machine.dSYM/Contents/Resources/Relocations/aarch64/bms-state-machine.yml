@@ -1,0 +1,5 @@
+---
+triple:          'arm64-apple-darwin'
+binary-path:     '/Users/robel.kumsa_25/Desktop/Formula/Firmware/SN5/BMS/Code/bms-state-machine'
+relocations:     []
+...

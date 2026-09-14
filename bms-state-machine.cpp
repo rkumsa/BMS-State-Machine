@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cstdlib>  
 #include <ctime>   
+#include <cassert>
 
 
 // States 
@@ -276,8 +277,70 @@ void runTempTest(State& current, int numReadings) {
 }
 
 
+// unit tests for the transition table
+void runUnitTests() {
+    // Off
+    assert(transition(State::Off, Event::StartSequence) == State::Precharging);
+    assert(transition(State::Off, Event::ChargerConnected) == State::Charging);
+    assert(transition(State::Off, Event::PrechargeComplete) == State::Off);
+    assert(transition(State::Off, Event::ManualReset) == State::Off);
+
+    // Precharging
+    assert(transition(State::Precharging, Event::PrechargeComplete) == State::Energized);
+    assert(transition(State::Precharging, Event::ShutdownRequested) == State::Off);
+    assert(transition(State::Precharging, Event::CellVoltageFault) == State::Fault);
+    assert(transition(State::Precharging, Event::CellTempFault) == State::Fault);
+    assert(transition(State::Precharging, Event::FuseFault) == State::Fault);
+    assert(transition(State::Precharging, Event::MissingReading) == State::Fault);
+    assert(transition(State::Precharging, Event::InternalFault) == State::Fault);
+    assert(transition(State::Precharging, Event::ChargerConnected) == State::Precharging);
+
+    // Energized
+    assert(transition(State::Energized, Event::ReadyToDriveRequested) == State::ReadyToDrive);
+    assert(transition(State::Energized, Event::ShutdownRequested) == State::Off);
+    assert(transition(State::Energized, Event::CellVoltageFault) == State::Fault);
+    assert(transition(State::Energized, Event::CellTempFault) == State::Fault);
+    assert(transition(State::Energized, Event::FuseFault) == State::Fault);
+    assert(transition(State::Energized, Event::MissingReading) == State::Fault);
+    assert(transition(State::Energized, Event::InternalFault) == State::Fault);
+    assert(transition(State::Energized, Event::StartSequence) == State::Energized);
+
+    // ReadyToDrive
+    assert(transition(State::ReadyToDrive, Event::ShutdownRequested) == State::Off);
+    assert(transition(State::ReadyToDrive, Event::CellVoltageFault) == State::Fault);
+    assert(transition(State::ReadyToDrive, Event::CellTempFault) == State::Fault);
+    assert(transition(State::ReadyToDrive, Event::FuseFault) == State::Fault);
+    assert(transition(State::ReadyToDrive, Event::MissingReading) == State::Fault);
+    assert(transition(State::ReadyToDrive, Event::InternalFault) == State::Fault);
+    assert(transition(State::ReadyToDrive, Event::ExitReadyToDrive) == State::Energized);
+    assert(transition(State::ReadyToDrive, Event::ChargerConnected) == State::ReadyToDrive);
+
+    // Charging
+    assert(transition(State::Charging, Event::ShutdownRequested) == State::Off);
+    assert(transition(State::Charging, Event::ChargingComplete) == State::Off);
+    assert(transition(State::Charging, Event::CellVoltageFault) == State::ChargingFault);
+    assert(transition(State::Charging, Event::CellTempFault) == State::ChargingFault);
+    assert(transition(State::Charging, Event::FuseFault) == State::ChargingFault);
+    assert(transition(State::Charging, Event::MissingReading) == State::ChargingFault);
+    assert(transition(State::Charging, Event::InternalFault) == State::ChargingFault);
+    assert(transition(State::Charging, Event::StartSequence) == State::Charging);
+
+    // Fault
+    assert(transition(State::Fault, Event::ManualReset) == State::Off);
+    assert(transition(State::Fault, Event::StartSequence) == State::Fault);
+    assert(transition(State::Fault, Event::ShutdownRequested) == State::Fault);
+
+    // ChargingFault
+    assert(transition(State::ChargingFault, Event::ManualReset) == State::Off);
+    assert(transition(State::ChargingFault, Event::ChargingComplete) == State::ChargingFault);
+    assert(transition(State::ChargingFault, Event::ShutdownRequested) == State::ChargingFault);
+
+    std::cout << "All unit tests passed." << std::endl;
+}
+
 //main function
 int main() {
+    runUnitTests();
     State current = State::Off;
     std::string line;
     srand(time(nullptr));
